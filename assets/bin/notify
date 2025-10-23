@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+# TODO(bkiahstroud): https://vizer.atlassian.net/browse/VIZR-4130
+# Replace with slack message (and convert to a binary?)
+msg="ClamAV detected '$CLAM_VIRUSEVENT_VIRUSNAME' virus in $CLAM_VIRUSEVENT_FILENAME. This file has been quarantined.\nPlease contact your admin immediately."
+
+osascript -e 'tell app "System Events" to display dialog "'"$msg"'"' &

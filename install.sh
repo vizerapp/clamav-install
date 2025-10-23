@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+
+if ! command -v brew &>/dev/null; then
+    echo "brew is required for this script"
+    exit 1
+fi
+
+if ! command -v curl &>/dev/null; then
+    echo "curl is required for this script"
+    exit 1
+fi
+
+echo "Running clamav setup"
+echo "🚨 IMPORTANT: you will soon be prompted for your machine's password, please watch this script run."
+echo "Note: your password will not be visible while you type."
+
+echo "Installing clamav with brew..."
+brew install clamav
+
+echo "Downloading configs..."
+sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/assets/clamd.conf \
+    -o /opt/homebrew/etc/clamav/clamd.conf
+sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/assets/freshclam.conf \
+    -o /opt/homebrew/etc/clamav/freshclam.conf
+
+echo "Setting up clamav..."
+mkdir /opt/homebrew/etc/clamav/{bin,quarantine}
+sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/assets/bin/notify \
+    -o /opt/homebrew/etc/clamav/bin/notify
+sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/assets/bin/scan_downloads \
+    -o /opt/homebrew/etc/clamav/bin/scan_downloads
+sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/assets/bin/scan_home \
+    -o /opt/homebrew/etc/clamav/bin/scan_home
+sudo chown -R clamav:clamav /opt/homebrew/etc/clamav/{bin,quarantine,freshclam.conf,clamd.conf}
+sudo chmod -R 770 /opt/homebrew/etc/clamav/bin
+sudo chmod -R 640 /opt/homebrew/etc/clamav/{quarantine,freshclam.conf,clamd.conf}
+
+echo "Setting up logs"
+mkdir -p /opt/homebrew/var/log/
+touch /opt/homebrew/var/log/{freshclam,clamdscan}.log
+sudo chown clamav:clamav /opt/homebrew/var/log/{freshclam,clamdscan}.log
+sudo chmod 644 /opt/homebrew/var/log/{freshclam,clamdscan}.log
+
+echo "Starting clamd..."
+sudo brew services start clamav
+
+echo "Downloading daemons..."
+sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/assets/daemons/com.vizerapp.clamav.clamdscan.downloads.plist \
+    -o /Library/LaunchDaemons/com.vizerapp.clamav.clamdscan.downloads.plist
+sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/assets/daemons/com.vizerapp.clamav.clamdscan.home.plist \
+    -o /Library/LaunchDaemons/com.vizerapp.clamav.clamdscan.home.plist
+sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/assets/daemons/com.vizerapp.clamav.freshclam.plist \
+    -o /Library/LaunchDaemons/com.vizerapp.clamav.freshclam.plist
+sudo chmod 644 /Library/LaunchDaemons/com.vizerapp.clamav.{clamdscan.downloads,clamdscan.home,freshclam}.plist
+
+echo "Starting daemons"
+sudo launchctl load /Library/LaunchDaemons/com.vizerapp.clamav.freshclam.plist
+sleep 5 # give freshclam a few moments to run
+sudo launchctl load /Library/LaunchDaemons/com.vizerapp.clamav.clamdscan.downloads.plist
+sudo launchctl load /Library/LaunchDaemons/com.vizerapp.clamav.clamdscan.home.plist
+
+echo "Downloading test virus files..."
+curl -s https://amtso.eicar.org/eicar.com -o ~/Downloads/eicar-standard-antivirus-test-file-d
+cp ~/Downloads/eicar-standard-antivirus-test-file-d ~/eicar-standard-antivirus-test-file-h
+
+echo 'Within 15 seconds, the eicar test files should be quarantined by clamav'
+echo '🚨 IMPORTANT: please accept all permission requests from "clamd" and "clamdscan"'
+
+i=15
+while [ $i -gt 0 ]; do
+    printf "\r$i"
+    ((i--))
+    sleep 1
+done
+echo
+
+echo "✅ clamav setup complete"
