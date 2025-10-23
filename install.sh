@@ -18,18 +18,18 @@ echo "Installing clamav with brew..."
 brew install clamav
 
 echo "Downloading configs..."
-sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/assets/clamd.conf \
+sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/HEAD/assets/clamd.conf \
     -o /opt/homebrew/etc/clamav/clamd.conf
-sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/assets/freshclam.conf \
+sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/HEAD/assets/freshclam.conf \
     -o /opt/homebrew/etc/clamav/freshclam.conf
 
 echo "Setting up clamav..."
 mkdir /opt/homebrew/etc/clamav/{bin,quarantine}
-sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/assets/bin/notify \
+sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/HEAD/assets/bin/notify \
     -o /opt/homebrew/etc/clamav/bin/notify
-sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/assets/bin/scan_downloads \
+sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/HEAD/assets/bin/scan_downloads \
     -o /opt/homebrew/etc/clamav/bin/scan_downloads
-sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/assets/bin/scan_home \
+sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/HEAD/assets/bin/scan_home \
     -o /opt/homebrew/etc/clamav/bin/scan_home
 sudo chown -R clamav:clamav /opt/homebrew/etc/clamav/{bin,quarantine,freshclam.conf,clamd.conf}
 sudo chmod -R 770 /opt/homebrew/etc/clamav/bin
@@ -45,11 +45,11 @@ echo "Starting clamd..."
 sudo brew services start clamav
 
 echo "Downloading daemons..."
-sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/assets/daemons/com.vizerapp.clamav.clamdscan.downloads.plist \
+sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/HEAD/assets/daemons/com.vizerapp.clamav.clamdscan.downloads.plist \
     -o /Library/LaunchDaemons/com.vizerapp.clamav.clamdscan.downloads.plist
-sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/assets/daemons/com.vizerapp.clamav.clamdscan.home.plist \
+sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/HEAD/assets/daemons/com.vizerapp.clamav.clamdscan.home.plist \
     -o /Library/LaunchDaemons/com.vizerapp.clamav.clamdscan.home.plist
-sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/assets/daemons/com.vizerapp.clamav.freshclam.plist \
+sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/HEAD/assets/daemons/com.vizerapp.clamav.freshclam.plist \
     -o /Library/LaunchDaemons/com.vizerapp.clamav.freshclam.plist
 sudo chmod 644 /Library/LaunchDaemons/com.vizerapp.clamav.{clamdscan.downloads,clamdscan.home,freshclam}.plist
 
