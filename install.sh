@@ -26,9 +26,6 @@ echo "Note: your password will not be visible while you type."
 echo "Installing clamav with brew..."
 brew install clamav
 
-echo "$BASE_PATH"
-echo "$LOG_PATH"
-
 echo "Downloading configs..."
 sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/HEAD/assets/clamd.conf \
     -o "$BASE_PATH/clamav/clamd.conf"
@@ -57,9 +54,9 @@ sudo chmod -R 640 "$BASE_PATH/clamav/quarantine"
 sudo chmod -R 640 "$BASE_PATH/clamav/freshclam.conf"
 sudo chmod -R 640 "$BASE_PATH/clamav/clamd.conf"
 if [[ "$ARCHITECTURE" == "i386" ]]; then
-    sudo sed -i '' "s|/opt/homebrew/etc/clamav|/usr/local/etc/clamav|g" "$BASE_PATH/clamav/bin/notify.conf"
-    sudo sed -i '' "s|/opt/homebrew/etc/clamav|/usr/local/etc/clamav|g" "$BASE_PATH/clamav/bin/scan_downloads.conf"
-    sudo sed -i '' "s|/opt/homebrew/etc/clamav|/usr/local/etc/clamav|g" "$BASE_PATH/clamav/bin/scan_home.conf"
+    sudo sed -i '' "s|/opt/homebrew/etc/clamav|/usr/local/etc/clamav|g" "$BASE_PATH/clamav/bin/notify"
+    sudo sed -i '' "s|/opt/homebrew/etc/clamav|/usr/local/etc/clamav|g" "$BASE_PATH/clamav/bin/scan_downloads"
+    sudo sed -i '' "s|/opt/homebrew/etc/clamav|/usr/local/etc/clamav|g" "$BASE_PATH/clamav/bin/scan_home"
 fi
 
 echo "Setting up logs"
