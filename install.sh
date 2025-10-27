@@ -24,7 +24,7 @@ sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/HEAD/asse
     -o /opt/homebrew/etc/clamav/freshclam.conf
 
 echo "Setting up clamav..."
-mkdir /opt/homebrew/etc/clamav/{bin,quarantine}
+sudo mkdir /opt/homebrew/etc/clamav/{bin,quarantine}
 sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/HEAD/assets/bin/notify \
     -o /opt/homebrew/etc/clamav/bin/notify
 sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/HEAD/assets/bin/scan_downloads \
@@ -36,8 +36,8 @@ sudo chmod -R 770 /opt/homebrew/etc/clamav/bin
 sudo chmod -R 640 /opt/homebrew/etc/clamav/{quarantine,freshclam.conf,clamd.conf}
 
 echo "Setting up logs"
-mkdir -p /opt/homebrew/var/log/
-touch /opt/homebrew/var/log/{freshclam,clamdscan}.log
+sudo mkdir -p /opt/homebrew/var/log/
+sudo touch /opt/homebrew/var/log/{freshclam,clamdscan}.log
 sudo chown clamav:clamav /opt/homebrew/var/log/{freshclam,clamdscan}.log
 sudo chmod 644 /opt/homebrew/var/log/{freshclam,clamdscan}.log
 
