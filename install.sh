@@ -26,6 +26,9 @@ echo "Note: your password will not be visible while you type."
 echo "Installing clamav with brew..."
 brew install clamav
 
+echo "$BASE_PATH"
+echo "$LOG_PATH"
+
 echo "Downloading configs..."
 sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/HEAD/assets/clamd.conf \
     -o "$BASE_PATH/clamav/clamd.conf"
