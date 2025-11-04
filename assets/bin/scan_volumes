@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# get username of currently signed-in user
+username=$(stat -f%Su /dev/console)
+id=$(id -u "$username")
+
+echo '------------------------------------'
+echo "$(date +%c) -> Starting scan of /Volumes"
+
+launchctl asuser "$id" sudo /opt/homebrew/bin/clamdscan \
+    --config-file=/opt/homebrew/etc/clamav/clamd.conf \
+    --move=/opt/homebrew/etc/clamav/quarantine \
+    --multiscan \
+    --fdpass \
+    --wait \
+    --no-summary \
+    /Volumes
