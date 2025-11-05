@@ -24,7 +24,8 @@ sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/HEAD/asse
     -o /opt/homebrew/etc/clamav/freshclam.conf
 
 echo "Setting up clamav..."
-sudo mkdir /opt/homebrew/etc/clamav/{bin,quarantine}
+sudo mkdir /opt/homebrew/etc/clamav/bin
+sudo mkdir /opt/homebrew/etc/clamav/quarantine
 sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/HEAD/assets/bin/notify \
     -o /opt/homebrew/etc/clamav/bin/notify
 sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/HEAD/assets/bin/scan_downloads \
@@ -33,15 +34,23 @@ sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/HEAD/asse
     -o /opt/homebrew/etc/clamav/bin/scan_home
 sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/HEAD/assets/bin/scan_volumes \
     -o /opt/homebrew/etc/clamav/bin/scan_volumes
-sudo chown -R clamav:clamav /opt/homebrew/etc/clamav/{bin,quarantine,freshclam.conf,clamd.conf}
+sudo chown -R clamav:clamav /opt/homebrew/etc/clamav/bin
+sudo chown -R clamav:clamav /opt/homebrew/etc/clamav/quarantine
+sudo chown clamav:clamav /opt/homebrew/etc/clamav/freshclam.conf
+sudo chown clamav:clamav /opt/homebrew/etc/clamav/clamd.conf
 sudo chmod -R 770 /opt/homebrew/etc/clamav/bin
-sudo chmod -R 640 /opt/homebrew/etc/clamav/{quarantine,freshclam.conf,clamd.conf}
+sudo chmod -R 640 /opt/homebrew/etc/clamav/quarantine
+sudo chmod 640 /opt/homebrew/etc/clamav/freshclam.conf
+sudo chmod 640 /opt/homebrew/etc/clamav/clamd.conf
 
 echo "Setting up logs"
 sudo mkdir -p /opt/homebrew/var/log/
-sudo touch /opt/homebrew/var/log/{freshclam,clamdscan}.log
-sudo chown clamav:clamav /opt/homebrew/var/log/{freshclam,clamdscan}.log
-sudo chmod 644 /opt/homebrew/var/log/{freshclam,clamdscan}.log
+sudo touch /opt/homebrew/var/log/freshclam.log
+sudo touch /opt/homebrew/var/log/clamdscan.log
+sudo chown clamav:clamav /opt/homebrew/var/log/freshclam.log
+sudo chown clamav:clamav /opt/homebrew/var/log/clamdscan.log
+sudo chmod 644 /opt/homebrew/var/log/freshclam.log
+sudo chmod 644 /opt/homebrew/var/log/clamdscan.log
 
 echo "Starting clamd..."
 sudo brew services start clamav
@@ -73,7 +82,7 @@ cp ~/Downloads/eicar-standard-antivirus-test-file-d ~/eicar-standard-antivirus-t
 sudo mkdir /Volumes/clamav-virus-test
 sudo cp ~/Downloads/eicar-standard-antivirus-test-file-d /Volumes/clamav-virus-test/eicar-standard-antivirus-test-file-v
 
-echo 'Within 60 seconds, two of the three eicar test files should be quarantined by clamav'
+echo 'Within 60 seconds, two or three of the three eicar test files should be quarantined by clamav'
 echo '🚨 IMPORTANT: please accept all permission requests from "clamd" and "clamdscan"'
 
 i=60
@@ -84,8 +93,26 @@ while [ $i -gt 0 ]; do
 done
 echo
 
+if sudo [ -f "/opt/homebrew/etc/clamav/quarantine/eicar-standard-antivirus-test-file-d" ]; then
+    echo '😀 ~/Downloads test virus detected successfully!'
+else
+    echo '😢 failed to detect virus in ~/Downloads'
+fi
+
+if sudo [ -f "/opt/homebrew/etc/clamav/quarantine/eicar-standard-antivirus-test-file-v" ]; then
+    echo '😀 /Volumes test virus detected successfully!'
+    sudo rm -rfv /Volumes/clamav-virus-test
+else
+    echo '😢 failed to detect virus in /Volumes'
+fi
+
+if sudo [ -f "/opt/homebrew/etc/clamav/quarantine/eicar-standard-antivirus-test-file-h" ]; then
+    echo '😀 ~/ test virus detected successfully!'
+else
+    echo '🤷 Did not detect virus file in ~/ (may not have scanned it yet, moving on)'
+fi
+
 echo "Running cleanup"
-sudo rm -rfv /Volumes/clamav-virus-test
 sudo rm -vf /opt/homebrew/etc/clamav/quarantine/eicar-standard-antivirus-test-file-*
 
 echo "✅ clamav setup complete"
