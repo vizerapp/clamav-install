@@ -26,6 +26,8 @@ sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/HEAD/asse
 echo "Setting up clamav..."
 sudo mkdir /opt/homebrew/etc/clamav/bin
 sudo mkdir /opt/homebrew/etc/clamav/quarantine
+sudo mkdir /opt/homebrew/var/lib/clamav
+sudo chown -R clamav:admin /opt/homebrew/var/lib/clamav
 sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/HEAD/assets/bin/notify \
     -o /opt/homebrew/etc/clamav/bin/notify
 sudo curl -s https://raw.githubusercontent.com/vizerapp/clamav-install/HEAD/assets/bin/scan_downloads \
